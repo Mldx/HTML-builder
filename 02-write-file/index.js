@@ -9,7 +9,7 @@ const rl = readline.createInterface({input: stdin, output: stdout});
 
 rl.on('SIGINT', () => {
   console.clear();
-  console.log('Файл записан!');
+  console.log('Файл text.txt создан!');
   rl.close();
 });
 
@@ -17,7 +17,7 @@ console.log('Напишите что нибудь в консоль:');
 rl.on('line', (line) => {
   if (line === 'exit' || line === 'Exit') {
     console.clear();
-    console.log('Файл создан!');
+    console.log('Файл text.txt создан!');
     rl.close();
   } else {
     stream.write(`${line}\n`);
