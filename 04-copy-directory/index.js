@@ -3,7 +3,6 @@ const path = require('node:path');
 
 const currPath = path.join(__dirname, 'files');
 const currPathCopy = path.join(__dirname, 'files-copy');
-console.log(currPathCopy);
 
 fs.readdir(currPathCopy, (err, files) => {
   if (files) {
