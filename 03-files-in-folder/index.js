@@ -8,7 +8,7 @@ const func = (pat) => {
       if (value.isFile()) {
         const filePath = path.join(pat, value.name);
         const fileName = value.name[0] !== '.'
-          ? value.name.slice(0, value.name.indexOf('.'))
+          ? value.name.slice(0, value.name.lastIndexOf('.'))
           : value.name;
 
         const fileExt = path.extname(filePath).replace('.', '')
@@ -18,7 +18,7 @@ const func = (pat) => {
         let fileWeight;
         fs.stat(filePath, (error, stat) => {
           fileWeight = stat.size / 1000;
-          console.log(`${fileName}—${fileExt}—${fileWeight}kB`);
+          console.log(`${fileName} — ${fileExt} — ${fileWeight}kB`);
         });
       }
     });
