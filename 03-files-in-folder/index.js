@@ -20,9 +20,6 @@ const func = (pat) => {
           fileWeight = stat.size / 1000;
           console.log(`${fileName}—${fileExt}—${fileWeight}kB`);
         });
-      } else {
-        const filePath = path.join(pat, value.name);
-        func(filePath);
       }
     });
   });
