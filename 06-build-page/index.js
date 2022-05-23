@@ -17,53 +17,49 @@ const outPathFonts = path.join(__dirname, 'project-dist', 'assets', 'fonts');
 const currPathSvg = path.join(path.join(__dirname, 'assets', 'svg'));
 const outPathSvg = path.join(__dirname, 'project-dist', 'assets', 'svg');
 
-
-fs.mkdir(outPath, () => {
-  fs.mkdir(path.join(__dirname, 'project-dist', 'assets'), () => {
-    fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'img'), () => {
-    });
-    fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'fonts'), () => {
-    });
-    fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'svg'), () => {
-    });
-  });
-});
-
-fs.readFile(templatePath, 'utf-8', (err, data) => {
-  let template = data;
-  fs.readdir(componentsPath, (err, files) => {
-    files.forEach((val, i) => {
-      fs.readFile(path.join(componentsPath, val), 'utf-8', (err, data) => {
-        template = template.replace(`{{${val.slice(0, val.lastIndexOf('.'))}}}`, data);
-        if (i === files.length - 1) {
-          setTimeout(()=>fs.writeFile(path.join(outPath, 'template.html'), template, () => {
-          }),100);
-        }
+async function createDir() {
+  fs.mkdir(outPath, () => {
+    fs.mkdir(path.join(__dirname, 'project-dist', 'assets'), () => {
+      fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'img'), () => {
+      });
+      fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'fonts'), () => {
+      });
+      fs.mkdir(path.join(__dirname, 'project-dist', 'assets', 'svg'), () => {
       });
     });
   });
-});
+}
 
-fs.readdir(stylePath, (err, files) => {
-  const cssFilesList = files.filter(value => value.slice(value.lastIndexOf('.')) === '.css');
-  let strOut = '';
-  cssFilesList.forEach(val => {
-    fs.readFile(path.join(stylePath, val), 'utf-8', (err, data) => {
-      strOut += data;
-      fs.writeFile(path.join(outPathCss, 'style.css'), strOut, (err) => {
-        if (err) {
-          throw err;
-        }
+async function changeTemplate() {
+  let template = await fs.promises.readFile(templatePath, 'utf-8');
+  const componentNames = await fs.promises.readdir(componentsPath);
+  for (const value of componentNames) {
+    const component = await fs.promises.readFile(path.join(componentsPath, `${value}`), 'utf-8');
+    const valRep = `{{${value.slice(0, value.lastIndexOf('.'))}}}`;
+    template = template.replace(valRep, component);
+  }
+  fs.writeFile(path.join(outPath, 'template.html'), template, () => {
+  });
+}
+
+async function cssJoin() {
+  fs.readdir(stylePath, (err, files) => {
+    const cssFilesList = files.filter(value => value.slice(value.lastIndexOf('.')) === '.css');
+    let strOut = '';
+    cssFilesList.forEach(val => {
+      fs.readFile(path.join(stylePath, val), 'utf-8', (err, data) => {
+        strOut += data;
+        fs.writeFile(path.join(outPathCss, 'style.css'), strOut, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
       });
     });
   });
-});
+}
 
-copyFile(currPathImg, outPathImg);
-copyFile(currPathFonts, outPathFonts);
-copyFile(currPathSvg, outPathSvg);
-
-function copyFile(currPath, outPath) {
+async function copyFile(currPath, outPath) {
   fs.readdir(outPath, (err, files) => {
     if (files) {
       files.forEach(value => {
@@ -91,4 +87,13 @@ function copyFile(currPath, outPath) {
   });
 }
 
+async function createSite() {
+  await createDir();
+  await changeTemplate();
+  await cssJoin();
+  await copyFile(currPathImg, outPathImg);
+  await copyFile(currPathFonts, outPathFonts);
+  await copyFile(currPathSvg, outPathSvg);
+}
 
+createSite();
