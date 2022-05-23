@@ -43,19 +43,14 @@ async function changeTemplate() {
 }
 
 async function cssJoin() {
-  fs.readdir(stylePath, (err, files) => {
-    const cssFilesList = files.filter(value => value.slice(value.lastIndexOf('.')) === '.css');
-    let strOut = '';
-    cssFilesList.forEach(val => {
-      fs.readFile(path.join(stylePath, val), 'utf-8', (err, data) => {
-        strOut += data;
-        fs.writeFile(path.join(outPathCss, 'style.css'), strOut, (err) => {
-          if (err) {
-            throw err;
-          }
-        });
-      });
-    });
+  let bundle = '';
+  let cssNames = await fs.promises.readdir(stylePath);
+  cssNames = cssNames.filter(value => value.slice(value.lastIndexOf('.')) === '.css');
+  for (const value of cssNames) {
+    const cssFile = await fs.promises.readFile(path.join(stylePath, `${value}`), 'utf-8');
+    bundle += cssFile;
+  }
+  fs.writeFile(path.join(outPathCss, 'style.css'), bundle, () => {
   });
 }
 
