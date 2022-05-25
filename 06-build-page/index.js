@@ -38,7 +38,7 @@ async function changeTemplate() {
     const valRep = `{{${value.slice(0, value.lastIndexOf('.'))}}}`;
     template = template.replace(valRep, component);
   }
-  fs.writeFile(path.join(outPath, 'template.html'), template, () => {
+  fs.writeFile(path.join(outPath, 'index.html'), template, () => {
   });
 }
 
